@@ -1,0 +1,358 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script>
+        var width = 0; //画布宽
+        var height = 0;//画面高
+        var fontFamily = "宋体";//"Monaco"; //字体种类
+        var backgroundColor = "#000013";//'#000013'; //画布背景色
+        $(function () {
+            //列出所有xml文件
+            XmlFileShow();
+        });
+
+        /*TODO 列出所有xml文件*/
+        function XmlFileShow() {
+            $.post("/FlowChartDemo/ShowXmlName", function (data) {
+                for (var index in data) {
+                    $('#xmlTd').append("<a href='javascript:void(0)'>" + data[index] + "</a><br/>");
+                }
+                $('a').each(function (index, element) {
+                    $(element).click(function () {
+                        XmlLoadAnalysis(element.text);
+                    });
+                });
+                //加载默认显示第一个xml解析后图片
+                XmlLoadAnalysis(data[0]);
+            });
+        }
+
+        /*TODO Xml加载解析及图表绘制*/
+        function XmlLoadAnalysis(xmlName) {
+            //初始化加载Xml并对其进行相应的格式化
+            var xmlFile = null;
+            if ((xmlFile = CheckXMLDocObj('/Content/FlowChartTestDemo/' + xmlName)) == null) return;
+            xmlFile = StringToXML("<p>" + xmlFile.innerHTML + "</p>");
+            var root = $(xmlFile).find("p")[0];
+            //初始化画布
+            var canvas = $('#deviceFlowChart');
+            var context = canvas.get(0).getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = backgroundColor;
+            width = canvas.width();
+            height = canvas.height();
+            context.fillRect(0, 0, width, height);
+            //解析xml将图片绘制到画布上
+            XmlAnalysis(root, context);
+        }
+
+        //#region xml加载相关操作
+        /*TODO 加载xml文档*/
+        function LoadXML(xmlFile) {
+            var xmlDoc;
+            if (window.ActiveXObject) {
+                xmlDoc = new ActiveXObject('Microsoft.XMLDOM');//IE浏览器
+                xmlDoc.async = false;
+                xmlDoc.load(xmlFile);
+            }
+            else if (isFirefox = navigator.userAgent.indexOf("Firefox") > 0) { //火狐浏览器
+                //else if (document.implementation && document.implementation.createDocument) {//这里主要是对谷歌浏览器进行处理
+                xmlDoc = document.implementation.createDocument('', '', null);
+                xmlDoc.load(xmlFile);
+            }
+            else { //谷歌浏览器
+                var xmlhttp = new window.XMLHttpRequest();
+                xmlhttp.open("GET", xmlFile, false);
+                xmlhttp.send(null);
+                if (xmlhttp.readyState == 4) {
+                    xmlDoc = xmlhttp.responseXML.documentElement;
+                }
+            }
+
+            return xmlDoc;
+        }
+
+        /*TODO 首先对xml对象进行判断*/
+        function CheckXMLDocObj(xmlFile) {
+            var xmlDoc = LoadXML(xmlFile);
+            if (xmlDoc == null) {
+                alert('您的浏览器不支持xml文件读取,于是本页面禁止您的操作,推荐使用IE5.0以上可以解决此问题!');
+                return null;
+            }
+            return xmlDoc;
+        }
+
+        /*TODO 字符串转Xml文档*/
+        function StringToXML(xmlString) {
+            // for IE 
+            if (window.ActiveXObject) {
+                var xmlobject = new ActiveXObject("Microsoft.XMLDOM");
+                xmlobject.async = "false";
+                xmlobject.LoadXML(xmlString);
+                return xmlobject;
+            }
+                // for other browsers 
+            else {
+                var parser = new DOMParser();
+                var xmlobject = parser.parseFromString(xmlString, "text/xml");
+                return xmlobject;
+            }
+        }
+        //#endregionor
+
+        //#region XML解析及图片绘制
+        /*TODO 解析Xml*/
+        function XmlAnalysis(root, context) {
+            for (var index = 0; index < root.childElementCount; index++) {
+                //获取节点判断并递归当前节点的所有子节点
+                var children = root.children[index];
+                if (children.hasChildNodes()) XmlAnalysis(children, context);
+                //根据不同的节点名字，绘制不同的图形
+                switch (children.nodeName) {
+                    case "symbol":
+                        //console.log("symbol");
+                        DrawImage(children, context);
+                        break;
+                    case "polyline":
+                        //console.log(children.attributes["name"].value);
+                        DrawLine(children, context);
+                        break;
+                    case "text":
+                        //console.log("text");
+                        DrawText(children, context);
+                        break;
+                    case "ellipse":
+                        DrawEllipse(children, context);
+                        break;
+                    case "rect":
+                        DrawRect(children, context);
+                        break;
+                    case "datapoint":
+                        DrawPoint(children, context);
+                }
+            }
+        }
+
+        /*TODO 图片绘制（角度旋转与坐标转换未完善）*/
+        function DrawImage(children, context) {
+            var image = new Image();
+            var x = children.attributes["x"].value;
+            var y = height - children.attributes["y"].value;
+            var scaleX = parseFloat(children.attributes["scale-x"].value);
+            scaleX = scaleX < 0 ? -scaleX : scaleX;
+            var scaleY = parseFloat(children.attributes["scale-y"].value);
+            var rotation = children.attributes["rotation"].value;
+            var selector = children.attributes["model-name"].value;
+            var index = ImageIndex(selector);
+            var angle = rotation * Math.PI / 180;
+            image.src = '/Content/themes/base/images/' + index + '.png';
+            $(image).load(function () {
+                var sx = image.width * scaleX;
+                var sy = image.height * scaleY;
+                y = y - sy;
+                //context.drawImage(image, x, y, sx, sy);
+                context.save();
+                context.rotate(angle);
+                if (angle == 0) context.drawImage(image, x, y, sx, sy);
+                context.drawImage(image, -(y + sy) - sx, x, sx, sy);// xpos - 170, ypos - 240 x y
+                context.restore();
+            });
+        }
+
+        /*TODO 线条绘制（未完善）*/
+        function DrawLine(children, context) {
+            var points = new Array();
+            points = children.attributes["points"].value.split(' ');
+            var fillColor = children.attributes["color"].value;
+            var strokeColor = children.attributes["stroke"].value;
+            var fillPattern = children.attributes["fill-pattern"].value;
+            var strokePattern = children.attributes["stroke-dasharray"].value;
+            var lineWidth = parseFloat(children.attributes["stroke-width"].value);
+            var x = new Array();
+            var y = new Array();
+            fillColor = ColorSelect(fillColor);
+            strokeColor = ColorSelect(strokeColor);
+            for (var index in points) {
+                if (points[index].length <= 0) continue;
+                x[index] = parseInt(points[index].split(',')[0]);
+                y[index] = height - parseInt(points[index].split(',')[1]);
+            }
+
+            context.fillStyle = fillColor;
+            context.strokeStyle = strokeColor;
+            context.lineWidth = lineWidth;
+            context.beginPath();
+            if (x.length > 2) {
+                context.moveTo(x[0], y[0]);
+                for (var index = 1; index <= x.length; index++) {
+                    context.lineTo(x[index], y[index]);
+                }
+            } else {
+                context.moveTo(x[0], y[0]);
+                context.lineTo(x[1], y[1]);
+            }
+            context.closePath();
+            if (strokePattern != "null") context.stroke();
+            if (fillPattern != "null") context.fill();
+        }
+
+        /*TODO 文本绘制(未完善）*/
+        function DrawText(children, context) {
+            var originalWidth = parseFloat(children.attributes["width"].value);
+            var originalHeight = parseFloat(children.attributes["height"].value);
+            OffsetCalc(children);
+            var fontSize = parseInt(children.attributes["font-size"].value);
+            var areaWidth = parseFloat(children.attributes["width"].value);
+            var areaHeight = parseFloat(children.attributes["height"].value);
+            var x = parseInt(children.attributes["x"].value) + areaWidth;
+            var y = height - parseInt(children.attributes["y"].value) - areaHeight;
+            var text = children.attributes["text"].value;
+            var color = children.attributes["text-color"].value;
+            var lineWidth = parseFloat(children.attributes["stroke-width"].value);
+            context.lineWidth = lineWidth;
+            context.strokeStyle = ColorSelect(color); //描边颜色
+            context.fillStyle = ColorSelect(color); //线条颜色
+            context.font = fontSize + "px  " + fontFamily;
+            context.fillText(text, x, y);
+            children.attributes["width"].value = originalWidth;
+            children.attributes["height"].value = originalHeight;
+        }
+
+        /*TODO 椭圆绘制(未完)*/
+        function DrawEllipse(children, context) {
+            //x,y (center) 
+            var x = parseInt(children.attributes["cx"].value);
+            var y = height - parseInt(children.attributes["cy"].value);
+            //a:width b:height
+            var a = parseInt(children.attributes["rx"].value);
+            var b = parseInt(children.attributes["ry"].value);
+            var fillColor = children.attributes["color"].value;
+            var strokeColor = children.attributes["stroke"].value;
+            var fillPattern = children.attributes["fill-pattern"].value;
+            var strokePattern = children.attributes["stroke-dasharray"].value;
+            fillColor = ColorSelect(fillColor);
+            strokeColor = ColorSelect(strokeColor);
+            var step = (a > b) ? 1 / a : 1 / b;
+            context.strokeStyle = strokeColor;
+            context.fillStyle = fillColor;
+            context.beginPath();
+            context.moveTo(x + a, y); //从椭圆的左端点开始绘制
+            for (var i = 0; i < 2 * Math.PI; i += step) {
+                //参数方程为x = a * cos(i), y = b * sin(i)，
+                //参数为i，表示度数（弧度）
+                context.lineTo(x + a * Math.cos(i), y + b * Math.sin(i));
+            }
+            context.closePath();
+            if (fillPattern != "null") context.fill();
+            if (strokePattern != "null") context.stroke();
+        };
+
+        /*TODO 矩形绘制(未完)*/
+        function DrawRect(children, context) {
+            var fillColor = children.attributes["color"].value;
+            var strokeColor = children.attributes["stroke"].value;
+            var fillPattern = children.attributes["fill-pattern"].value;
+            var strokePattern = children.attributes["stroke-dasharray"].value;
+            var strokeWidth = parseInt(children.attributes["stroke-width"].value);
+            var rectWidth = parseInt(children.attributes["width"].value);
+            var rectHeight = parseInt(children.attributes["height"].value);
+            var x = parseInt(children.attributes["x"].value);
+            var y = height - parseInt(children.attributes["y"].value) - rectHeight;
+            fillColor = ColorSelect(fillColor);
+            strokeColor = ColorSelect(strokeColor);
+            context.fillStyle = fillColor;
+            context.strokeColor = strokeColor;
+            if (fillPattern != "null") context.fillRect(x + strokeWidth, y + strokeWidth, rectWidth - strokeWidth * 2, rectHeight - strokeWidth * 2); 
+            if (strokePattern != "null") context.strokeRect(x, y, rectWidth, rectHeight);
+        }
+
+        /*TODO 数据点绘制（未完）*/
+        function DrawPoint(children, context) {
+
+        }
+
+        /*TODO 图片索引(未完）*/
+        function ImageIndex(selector) {
+            switch (selector) {
+                case "Vessel1":
+                    return 1;
+                case "Vessel2":
+                    return 2;
+                default:
+                    return 1;
+            }
+        }
+
+        /*TODO 颜色选择*/
+        function ColorSelect(rgb) {
+            var regexp = /[0-9]{0,3}/g;
+            var re = rgb.match(regexp);//利用正则表达式去掉多余的部分，将rgb中的数字提取
+            var hexColor = "#"; var hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+            for (var i = 0; i < re.length; i++) {
+                var r = null, c = re[i], l = c;
+                var hexAr = [];
+                while (c > 16) {
+                    r = c % 16;
+                    c = (c / 16) >> 0;
+                    hexAr.push(hex[r]);
+                } hexAr.push(hex[c]);
+                if (l < 16 && l != "") {
+                    hexAr.push(0);
+                }
+                hexColor += hexAr.reverse().join('');
+            }
+            return hexColor;
+        }
+
+        /*TODO 偏移量记算（未完）*/
+        function OffsetCalc(children) {
+            var areaWidth = parseFloat(children.attributes["width"].value);
+            var areaHeight = parseFloat(children.attributes["height"].value);
+            var textCount = CharCount(children.attributes["text"].value);
+            var fontSize = parseInt(children.attributes["font-size"].value);
+            var offsetX = fontSize * textCount;
+            children.attributes["width"].value = areaWidth / 2.0 - offsetX;
+            children.attributes["height"].value = areaHeight / 2.0 - fontSize / 2.0;
+        }
+
+        /*TODO 计算字符个数*/
+        function CharCount(text) {
+            var regex = /[\u4e00-\u9fa5]/;
+            var count = 0;
+            for (var index in text) {
+                if (regex.test(text[index])) count += 2;
+                else count += 1;
+            }
+            return parseFloat(count / 4.0);
+        }
+
+        /*TODO 字号像素转换(没用先留着）*/
+        function FontSizePixel(fontSize) {
+            return parseInt(fontSize / 72 * 96);
+        }
+        //#endregion
+    </script>
+</head>
+<body>
+    <div>
+        <table style="width: 100%;">
+            <tr>
+                <td id="xmlTd"></td>
+                <td style="width: 1000px; height: 730px;">
+                    <canvas width="1000" height="730" id="deviceFlowChart">
+                        <p>Your browserdoes not support the canvas element.</p>
+                    </canvas>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

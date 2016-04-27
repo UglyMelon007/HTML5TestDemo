@@ -1,0 +1,79 @@
+﻿@model dynamic
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>First Html5 Demo</title>
+    <script src="~/Scripts/jquery-1.8.2.min.js"></script>
+    <script src="~/Scripts/jquery-1.8.2.intellisense.js"></script>
+    <script>
+        $(function () {
+            var canvas = $('#myFirstCanvas');
+            var context = canvas.get(0).getContext("2d");
+            //context.fillStyle = 'red';
+            //context.strokeStyle = 'blue';
+            //context.fillRect(490, 40, 40, 40);
+            //context.strokeRect(40, 40, 40, 40);
+            //context.lineWidth = 4;
+            //context.beginPath();
+            //context.moveTo(440, 49);
+            //context.lineTo(380, 90);
+            //context.arc(30, 30, 20, 0, 360, true);
+            //context.closePath();
+            //context.stroke();
+            //var hello = "Hello World ";
+            //context.font = "80px Monaco";
+            //context.strokeText(hello, 160, 160);
+            //context.clearRect(0, 0, canvas.width(), canvas.height());
+            //context.clearRect(490, 40, 40, 40);
+            //context.clearRect(10, 10, 20, 20);
+            var image = new Image();
+            context.translate(100, 100);//平移
+            context.rotate(0.748); //旋转
+            context.shadowBlur = 20;
+            context.shadowColor = 'blue';
+            image.src = '/Content/themes/base/images/1.jpg';
+           
+            $(image).load(function () {
+                context.drawImage(image, 10, 20, 50, 50);
+                var imageData = context.getImageData(0, 0, canvas.width(), canvas.height());
+                var pixel = imageData.data;
+                for (var i = 0; i < pixel.length; i++) {
+                    var gray = (pixel[i * 4 + 1] + pixel[i * 4 + 2] + pixel[i * 4 + 3]) / 3;
+                    pixel[i * 4 + 1] = gray;
+                    pixel[i * 4 + 2] = gray;
+                    pixel[i * 4 + 3] = gray;
+                }
+                context.putImageData(imageData, 0, 0);//将像素绘制到画布上
+            });
+            canvas.click(function (e) {
+                var canvasOffset = canvas.offset();//获取canvas相对页面偏移量
+                //计算鼠标相对canvas偏移量
+                var canvasX = e.pageX - canvasOffset.left;
+                var canvasY = e.pageY - canvasOffset.top;
+                //得到该点图片信息
+                var imageData = context.getImageData(canvasX, canvasY, 1, 1);
+                var pixel = imageData.data;
+                var gray = (pixel[0] + pixel[1] + pixel[2]) / 3;
+                var pixelColor = "rgba(" + (255 - pixel[0]) + "," + (255 - pixel[1]) + "," + (255 - pixel[2]) + "," + pixel[3] + ")";//得到该点像素值
+                alert(pixelColor);
+                $('body').css('backgroundColor', pixelColor);
+            });
+        });
+        localStorage.hello = 'hello';//创建localStorage hello可以换成其他的
+        alert(localStorage.hello); //访问创建的localStorage hello
+        sessionStorage.hello = 'world'; //创建sessionStorage hello可以换成其他的 (当用户关闭浏览器窗口后，数据会被删除。)
+        alert(sessionStorage.hello);//访问创建的sessionStorage hello 
+    </script>
+</head>
+<body>
+    <div>
+        <canvas width="500" height="400" id="myFirstCanvas"></canvas>
+    </div>
+</body>
+</html>

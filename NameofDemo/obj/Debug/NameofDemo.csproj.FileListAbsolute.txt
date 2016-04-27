@@ -1,0 +1,6 @@
+E:\chao_code\ASPNet\HTML5Demo\NameofDemo\bin\Debug\NameofDemo.exe.config
+E:\chao_code\ASPNet\HTML5Demo\NameofDemo\bin\Debug\NameofDemo.exe
+E:\chao_code\ASPNet\HTML5Demo\NameofDemo\bin\Debug\NameofDemo.pdb
+E:\chao_code\ASPNet\HTML5Demo\NameofDemo\obj\Debug\NameofDemo.csprojResolveAssemblyReference.cache
+E:\chao_code\ASPNet\HTML5Demo\NameofDemo\obj\Debug\NameofDemo.exe
+E:\chao_code\ASPNet\HTML5Demo\NameofDemo\obj\Debug\NameofDemo.pdb
