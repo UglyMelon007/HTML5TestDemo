@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			table {
+				width: 600px;
+				border-collapse: collapse;
+			}
+
+			th,
+			td {
+				border: none;
+			}
+
+			th {
+				background-color: #000;
+				color: #fff;
+			}
+
+			tr:nth-of-type(even) {
+				background-color: #f3f3f3;
+			}
+
+			tr:nth-of-type(odd) {
+				background-color: #ddd;
+			}
+
+			td:nth-child(n+2) {
+				text-align: right;
+			}
+
+			tr:last-child {
+				font-weight: bolder;
+			}
+
+			tr:last-child td:last-child {
+				font-size: 24px;
+			}
+
+			tr:nth-last-child(2) {
+				color: green;
+			}
+
+			tr:nth-last-child(-n+3) {
+				text-align: right;
+			}
+
+			a:after {
+				content: " (" attr(href) ") ";
+			}
+
+			.newsletter {
+				column-count: 2;
+				-moz-column-count: 2;
+				-webkit-column-count: 2;
+				column-gap: 20px;
+				-moz-column-gap: 20px;
+				-webkit-column-gap；20px;
+				column-rule: 1px solid #ddccb5;
+				-moz-column-rule: 1px solid #ddccb5;
+				-webkit-column-rule: 1px solid #ddccb5;
+			}
+
+			fieldset {
+				width: 216px;
+				border: none;
+				background-color: #ddd;
+			}
+
+			fieldset legend {
+				background-color: #ddd;
+				padding: 0 64px 0 2px;
+			}
+
+			fieldset>ol {
+				list-style: none;
+				padding: 0;
+				margin: 2px;
+			}
+
+			fieldset>ol>li {
+				margin: 0 0 9px 0;
+			}
+
+			fieldset input {
+				display:block;
+			}
+			fieldset input {
+				width: 200px;
+				background-color: #fff;
+				border: 1px solid #bbb;
+			}
+
+			input[type="submit"] {
+				widows: 202px;
+				padding: 0;
+				background-color: #bbb;
+			}
+
+			fieldset input, 
+			fieldset,
+			legend {
+				border-radius: 5px;
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+			}
+
+			footer {
+				text-align: center;
+				font-style: italic;
+				font-size: medium;
+			}
+
+			#conference {
+				background-color: #000;
+				width: 960px;
+				float: left;
+				background-image: url('./Images/bg.jpg');
+				background-size: cover;
+				background-repeat: no-repeat;
+				background-position: center;
+				height: 240px;
+			}
+
+			#badge {
+				text-align: center;
+				width: 200px;
+				border: 2px solid blue;
+			}
+
+
+			#badge,
+			#info {
+				float: left;
+				background-color: #fff;
+			}
+
+			#badge h2 {
+				margin: 0;
+				color: red;
+				font-size: 40px;
+			}
+
+			#badge{
+				background-image: -moz-linear-gradient(
+					top, #fff, #efefef
+				);
+				background-image: -webkit-gradient(
+					linear, left top, left bottom,
+					color-stop(0, #fff), 
+					color-stop(1, #efefef)
+				);
+				background-image: linear-gradient(
+					top, #fff, #efefef
+				);
+				-moz-box-shadow: 5px 5px 5px #333;
+				-webkit-box-shadow: 5px 5px 5px #333;
+				box-shadow: 5px 5px 5px #333;
+
+				-moz-transform: rotate(-7.5deg);
+				-webkit-transform: rotate(-7.5deg);
+				transform: rotate(-7.5deg);
+			}
+
+			#info {
+				margin: 20px;
+				padding: 20px;
+				width: 660px;
+				height: 160px;
+				background-color: rgba(255, 255, 255, 0.8);
+				-moz-border-radius: 12px;
+				-webkit-border-radius: 12px;
+				border-radius: 12px;
+			}
+
+			@font-face {
+				font-family: 'FontTestDemo';
+				src: url('./Fonts/MATURASC.TTF') format('truetype');
+				font-weight: normal;
+			}
+
+			footer {
+				font-family: 'FontTestDemo';
+			}
+
+			hr {
+				margin-bottom: 20px;
+				margin-top: 20px;
+			}
+
+			.clear {
+				clear: both;
+			}
+
+			<!--[if IE]>
+			fieldset {
+				margin-top: 10px;
+			}
+
+			fieldset>legend {
+				margin-top: -10px;
+			}
+			<![endif]-->
+		</style>
+
+	</head>
+
+	<body>
+		<section class="newsletter">
+			<progress></progress>
+			<meter title="USD" value="2500" min="0" max="5000">$2500</meter>
+			<p contenteditable>lorem ipsum</p>
+			<input type="color">
+			<input type="range" min="0" max="10" value="0">
+			<!--直接输入数字不受最大最小值限值 step为每次增长的步长,默认为1-->
+			<input type="number" min="100" max="1000" step="2" value="100">
+			<!--若月份或天数不足10，则在其前加0，以确保可以正确显示-->
+			<input type="date" value="2016-08-17">
+			<input type="email" autofocus>
+			<input type="url">
+			<input type="text" placeholder="hello UM007">
+			<input type="password" autocomplete="off">
+			<table>
+				<tr>
+					<th>Item</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Total</th>
+				</tr>
+				<tr>
+					<td>Coffee mug</td>
+					<td>$10.00</td>
+					<td>5</td>
+					<td>$50.00</td>
+				</tr>
+				<tr>
+					<td>Polo shirt</td>
+					<td>$20.00</td>
+					<td>5</td>
+					<td>$100.00</td>
+				</tr>
+				<tr>
+					<td>Red stapler</td>
+					<td>$9.00</td>
+					<td>4</td>
+					<td>$36.00</td>
+				</tr>
+				<tr>
+					<td colspan="3">Subtotal</td>
+					<td>1186.00</td>
+				</tr>
+				<tr>
+					<td colspan="3">Shipping</td>
+					<td>112.00</td>
+				</tr>
+				<tr>
+					<td colspan="3">TotalDue</td>
+					<td>1198.00</td>
+				</tr>
+			</table>
+			<ul>
+				<li><a href="www.baidu.com">测试</a></li>
+				<li><a href="www.baidu.com">测试</a></li>
+				<li><a href="www.baidu.com">测试</a></li>
+			</ul>
+			<canvas id='canvas' width="150" height="210">浏览器没支持canvas</canvas>
+		</section>
+		<hr>
+		<section>
+			<article class="newsletter">
+				<header>
+					<h2>Hello World !!</h2>
+				</head>
+				<p>
+					He was an old man who fished alone in a skiff in the Gulf Stream and he had gone eighty-four days now without taking a fish. In the first forty days a boy had been with him. But after forty days without a fish the boy's parents had told him that the old man was now definitely and finally salao, which is the worst form of unlucky, and the boy had gone at their orders in another boat which caught three good fish the first week. 他一个老人，划着小船独自在墨西哥湾中捕鱼；八 十四天了还没有捕到过一条鱼。最初的四十天里，小男孩一直都跟着他，而四十 天后，男孩的父母便告诉孩子说：这老人的运气肯定是跌到了谷底，简直就是倒 霉透顶了。于是男孩在他父母亲的命令下，转到了另外一条船上去捕鱼，结果不 出一个星期，就捕到了三条大鱼。
+				</p>
+				<p>
+					It made the boy sad to see the old man come in each day with his skiff empty and he always went down to help him carry either the coiled lines or the gaff and harpoon and the sail that was furled around the mast. The sail was patched with flour sacks and, furled, it looked like the flag of permanent defeat. 然而，男孩看着老人日复一日驾着那空 空的小船回来，总是为他感到难过。因此总会在老人回来时，上前帮忙提绳索、 鱼钩、鱼叉以及从船桅上卸下的船帆等。老人的船帆上满是用面粉袋做成的补钉 ，使得帆布卷起来时，好似一面象征无限败战的旗帜。
+				</p>
+				<footer>Author UM007</footer>
+			</article>
+		</section>
+		<hr>
+		<section>
+			<form action="/login" method="post">
+				<fieldset id="login">
+					<legend>Log in </legend>
+					<ol>
+						<li>
+							<label for="email">Email</label>
+							<input id="email" type="email">
+						</li>
+						<li>
+							<label for="password">Password</label>
+							<input id="password" type="password">
+						</li>
+						<li>
+							<input type="submit" value="Log In">
+						</li>
+					</ol>
+				</fieldset>
+			</form>
+		</section>
+		<hr>
+		<section>
+			<div id="conference">
+				<section id="badge">
+					<h3>Hi Hello World</h3>
+					<h2>UM007</h2>
+				</section>
+				<section id="info"></section>
+			</div>
+		</section>
+		<div class="clear"></div>
+		<hr>
+		<section id="preferencesSection">
+			<p><strong>Preferences</strong></p>
+			<form id="preferences" action="">
+				<fieldset id="colors">
+					<legend>Colors</legend>
+					<ol>
+						<li>
+							<label for="background_color">Background Color</label>
+							<input type="color" name="background_color" id="background_color">
+						</li>
+						<li>
+							<label for="text_color">TextColor</label>
+							<input type="color" name="text_color" id="text_color">
+						</li>
+						<li>
+							<label for="tex_size">TextSize</label>
+							<select id="text_size" name="text_size">
+								<option value="16">16px</option>
+								<option value="20">20px</option>
+								<option value="24">24px</option>
+							</select>
+						</li>
+					</ol>
+				</fieldset>
+				<input type="submit" value="Save changes">
+			</form>
+		</section>
+		<footer id="bodyFooter">Copyright @UM007</footer>
+	</body>
+
+	<script src="./JS/jquery.min.js"></script>
+	<script>
+		var storage = localStorage;
+
+		$(function() {
+			CanvasTest();
+			LoadSettings();
+			$('form#preferences').submit(function(event) {
+				event.preventDefault();
+				saveSettings();
+			});
+		});
+
+		function saveSettings() {
+			storage.background_color = $('#background_color').val();
+			storage.text_color = $('#text_color').val();
+			storage.text_size = $('#text_size').val();
+			ApplyPreferencesToPage();
+		}
+
+		function LoadSettings() {
+			var bgcolor = storage.background_color;
+			var textColor = storage.text_color;
+			var textSize = storage.text_size;
+
+			$('#background_color').val(bgcolor);
+			$('#text_color').val(textColor);
+			$('#text_size').val(textSize);
+
+			ApplyPreferencesToPage();
+		}
+
+		function ApplyPreferencesToPage() {
+			$('#preferencesSection').css('backgroundColor', $('#background_color').val());
+			$('#preferencesSection').css('color', $('#text_color').val());
+			$('#preferencesSection').css('fontSize', $('#text_size').val() + 'px');
+		}
+
+		function CanvasTest(){
+			var canvas = document.getElementById('canvas');
+			if (canvas.getContext) {
+				var context = canvas.getContext('2d');
+				context.fillStyle = "rgb(200, 100, 0)";
+				context.fillRect(10, 10, 100, 100);
+				context.fillStyle = "rgb(0, 200, 0)";
+				context.fillRect(20, 20, 100, 100);
+				context.fillStyle = "rgb(0, 0, 200)";
+				context.fillRect(30, 30, 100, 100);
+			}
+		}
+
+	</script>
+
+</html>
